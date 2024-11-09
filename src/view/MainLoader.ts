@@ -46,8 +46,8 @@ export default class MainLoader extends Scene {
     private setupFontLoader() {
         WebFont.load({
             custom: {
-                families: ['CrashLandingItalic'],
-                urls: ['src/fonts/CrashLandingBB.ttf']
+                families: ['GhostKid'],
+                urls: ['src/fonts/GhostKidAOE_Pro.otf']
             },
             active: () => {
                 // Fonts have loaded

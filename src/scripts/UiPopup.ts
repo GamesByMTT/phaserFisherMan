@@ -42,7 +42,7 @@ export class UiPopups extends Phaser.GameObjects.Container {
             this.buttonMusic("buttonpressed")
             this.openPopUp();
         }, 0, true);
-        this.menuBtn.setPosition( gameConfig.scale.width / 1.225, gameConfig.scale.height / 7 );
+        this.menuBtn.setPosition( gameConfig.scale.width * 0.92, gameConfig.scale.height / 7 );
         this.add(this.menuBtn);
     }
     exitButton(){
@@ -75,8 +75,8 @@ export class UiPopups extends Phaser.GameObjects.Container {
 
     infoBtnInit() {
         const infoBtnSprites = [
-            this.scene.textures.get('infoBtn'),
-            this.scene.textures.get('infoBtnH'),
+            this.scene.textures.get('paytableIcon'),
+            this.scene.textures.get('paytableIcon'),
         ];
         this.infoBtn = new InteractiveBtn(this.scene, infoBtnSprites, () => {
             // info button 
@@ -101,13 +101,13 @@ export class UiPopups extends Phaser.GameObjects.Container {
     }
 
     tweenToPosition(button: InteractiveBtn, index: number) {
-        const targetY =  this.menuBtn.x + (index * (this.menuBtn.width))
+        const targetY =  this.menuBtn.y + (index * (this.menuBtn.height))
        // Calculate the x position with spacing
        button.setPosition(this.menuBtn.x, this.menuBtn.y)
         button.setVisible(true);
         this.scene.tweens.add({
             targets: button,
-            x: targetY,
+            y: targetY,
             duration: 300,
             ease: 'Elastic',
             easeParams: [1, 0.9],
@@ -121,7 +121,7 @@ export class UiPopups extends Phaser.GameObjects.Container {
         button.setInteractive(false);
         this.scene.tweens.add({
             targets: button,
-            x: button,
+            y: button,
             duration: 100,
             ease: 'Elastic',
             easeParams: [1, 0.9],
@@ -160,13 +160,13 @@ export class UiPopups extends Phaser.GameObjects.Container {
 
          // Create scrollbar container
         const popupBg = this.scene.add.image(0, 0, 'messagePopup').setDepth(13);
-        const settingText = this.scene.add.text(-100, -290, 'SETTINGS', {color: "#000000", fontSize: "100px", fontFamily: 'crashLandingItalic'});
+        const settingText = this.scene.add.sprite(0, -300, 'settingText').setOrigin(0.5);
         const soundsImage = this.scene.add.image(-270, -100, 'soundImage').setDepth(10).setScale(0.7);
         const musicImage = this.scene.add.image(-270, 100, 'musicImage').setDepth(10).setScale(0.7);
-        const volume0 = this.scene.add.text(-250, -190, "0%", {color: "#616d77", fontSize: "40px", fontFamily: 'crashLandingItalic'});
-        const volume100 = this.scene.add.text(270, -190, "100%", {color: "#616d77", fontSize: "40px", fontFamily: 'crashLandingItalic'});
-        const musicVolume0 = this.scene.add.text(-250, 10, "0%", {color: "#616d77", fontSize: "40px", fontFamily: 'crashLandingItalic'});
-        const musicVolume100 = this.scene.add.text(270, 10, "100%", {color: "#616d77", fontSize: "40px", fontFamily: 'crashLandingItalic'});
+        const volume0 = this.scene.add.text(-250, -190, "0%", {color: "#616d77", fontSize: "40px", fontFamily: 'GhostKid'});
+        const volume100 = this.scene.add.text(270, -190, "100%", {color: "#616d77", fontSize: "40px", fontFamily: 'GhostKid'});
+        const musicVolume0 = this.scene.add.text(-250, 10, "0%", {color: "#616d77", fontSize: "40px", fontFamily: 'GhostKid'});
+        const musicVolume100 = this.scene.add.text(270, 10, "100%", {color: "#616d77", fontSize: "40px", fontFamily: 'GhostKid'});
        
         const soundScrollbarContainer = this.scene.add.container(-200, -100);
         const musicScrollbarContainer = this.scene.add.container(-200, 100);
@@ -309,9 +309,8 @@ export class UiPopups extends Phaser.GameObjects.Container {
         popupBg.setAlpha(1); // Set background transparency
         this.exitBtn.disableInteractive();
 
-        const quitHeading = this.scene.add.text(-150, -250, "QUIT GAME", {color:"#000000", fontSize: "100px", fontFamily: 'crashLandingItalic', })
         // Add text to the popup
-        const popupText = this.scene.add.text(-200, -100, "Do you really want \n to exit?", {color:"#000000", fontSize: "80px", fontFamily: 'crashLandingItalic', align:"center" });
+        const popupText = this.scene.add.text(0, -100, "Do you really want \n to exit?", {color:"#ffffff", fontSize: "80px", fontFamily: 'GhostKid', align:"center" }).setOrigin(0.5);
         
         // Yes and No buttons
         const logoutButtonSprite = [
@@ -327,8 +326,8 @@ export class UiPopups extends Phaser.GameObjects.Container {
             Globals.Socket?.socket.emit("EXIT", {});
         }, 0, true);
         const logoutNoButtonSprite = [
-            this.scene.textures.get("yesButton"),
-            this.scene.textures.get("yesButtonHover")
+            this.scene.textures.get("noButton"),
+            this.scene.textures.get("noButtonHover")
         ];
         this.noBtn = new InteractiveBtn(this.scene, logoutNoButtonSprite, () => {
             this.UiContainer.onSpin(false);
@@ -336,13 +335,11 @@ export class UiPopups extends Phaser.GameObjects.Container {
             popupContainer.destroy();
             blurGraphic.destroy(); // Destroy blurGraphic when popup is closed
         }, 0, true);
-        const yesText = this.scene.add.text(-130, 140, "YES", {color:"#000000", fontFamily:"crashLandingItalic", fontSize:"50px"}).setOrigin(0.5)
-        const noText = this.scene.add.text(130, 140, "NO", {color:"#000000", fontFamily:"crashLandingItalic", fontSize:"50px"}).setOrigin(0.5)
         this.yesBtn.setPosition(-130, 150).setScale(0.8, 0.8);
         this.noBtn.setPosition(130, 150).setScale(0.8, 0.8);
        
         // Add all elements to popupContainer
-        popupContainer.add([popupBg, popupText, quitHeading, this.yesBtn,yesText, this.noBtn, noText]);
+        popupContainer.add([popupBg, popupText, this.yesBtn, this.noBtn]);
         // Add popupContainer to the scene
         this.scene.add.existing(popupContainer);       
     }

@@ -29,7 +29,7 @@ export class SocketManager {
    this.socket = io(this.SocketUrl, {
       auth: {
         token: this.authToken,
-        gameId: "SL-FRM",
+        gameId: "SL-FISH",
       },
       reconnectionAttempts: 5,
       reconnectionDelay: 15000, // Initial delay between reconnection attempts (in ms)
@@ -46,7 +46,11 @@ export class SocketManager {
       console.log("Connected to the server");
       this.socket.on("message", (message : any) => {
         const data = JSON.parse(message);
-       
+        
+        if(data.id=="AnotherDevice"){
+          console.log("dffgbfgb");
+          
+        } 
         
         if(data.id == "InitData" ) {
           console.log(data, "initiData");
@@ -61,6 +65,7 @@ export class SocketManager {
             initData.playerData = data.message.PlayerData;
             initData.UIData.symbols = data.message.UIData.paylines.symbols
             initData.gameData.BonusData = data.message.BonusData;
+            ResultData.playerData.Balance = data.message.PlayerData.Balance
           }
         }
         if(data.id == "ResultData"){

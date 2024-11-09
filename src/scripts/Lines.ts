@@ -14,7 +14,7 @@ export class LineGenerator extends Phaser.GameObjects.Container {
         yOffset = yOf;
 
         // Create lines based on initData
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < 12; i++) {
             let line = new Lines(scene, i);
             this.add(line);  // Add each 'Lines' container to this container
             this.lineArr.push(line);  // Store reference for later use
@@ -44,7 +44,7 @@ export class Lines extends Phaser.GameObjects.Container {
 
     constructor(scene: Phaser.Scene, index: number) {
         super(scene);
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < 12; i++) {
             const lineSprite = this.createLineSprite(scene, i);
             this.lineSprites.push(lineSprite);
             this.add(lineSprite);

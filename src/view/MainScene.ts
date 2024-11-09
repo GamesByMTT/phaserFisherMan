@@ -33,6 +33,8 @@ export default class MainScene extends Scene {
     uiContainer!: UiContainer;
     uiPopups!: UiPopups;    
     lineSymbols!: LineSymbols;
+    rightPin!: Phaser.GameObjects.Sprite;
+    leftPin!: Phaser.GameObjects.Sprite
     private mainContainer!: Phaser.GameObjects.Container;
 
     constructor() {
@@ -50,13 +52,15 @@ export default class MainScene extends Scene {
         this.gameBg = this.add.sprite(width / 2, height / 2, 'gameBg')
             .setDepth(0)
             .setDisplaySize(1920, 1080);
-        this.reelBg = this.add.sprite(width/2, height/1.9, "reelBg").setOrigin(0.5)
-        this.left = this.add.sprite(width * 0.22, height/1.9, "leftColumn").setOrigin(0.5)
-        this.right = this.add.sprite(width * 0.785, height/1.9, "rightColumn").setOrigin(0.5)
-        this.top = this.add.sprite(width/2, height * 0.25, "topColumn").setOrigin(0.5)
-        this.bottom = this.add.sprite(width/2, height * 0.81, "bottomColumn").setOrigin(0.5)
-        this.gameLogo = this.add.sprite(width * 0.5, height * 0.08, "gameLogo").setOrigin(0.5)
-        this.mainContainer.add([this.gameBg, this.reelBg, this.left, this.right, this.top, this.bottom]);
+        this.reelBg = this.add.sprite(width/2, height/1.9, "reelBg").setOrigin(0.5).setDepth(3)
+        this.left = this.add.sprite(width * 0.22, height/1.9, "leftColumn").setOrigin(0.5).setDepth(3)
+        this.right = this.add.sprite(width * 0.785, height/1.9, "rightColumn").setOrigin(0.5).setDepth(3)
+        this.top = this.add.sprite(width/2, height * 0.25, "topColumn").setOrigin(0.5).setDepth(3)
+        this.bottom = this.add.sprite(width/2, height * 0.81, "bottomColumn").setOrigin(0.5).setDepth(15).setDepth(3)
+        this.gameLogo = this.add.sprite(width * 0.5, height * 0.08, "gameLogo").setOrigin(0.5).setDepth(3)
+        this.rightPin = this.add.sprite(gameConfig.scale.width * 0.8, gameConfig.scale.height/1.9, "rightPin").setOrigin(0.5)
+        this.leftPin = this.add.sprite(gameConfig.scale.width * 0.2, gameConfig.scale.height/1.9, "leftPin").setOrigin(0.5) 
+        this.mainContainer.add([this.gameBg, this.rightPin, this.leftPin, this.reelBg, this.left, this.right, this.top, this.bottom]);
          // Repeat reelBg 4 times
          const midLine = 4;
          const midLineSpacing = 212; // Adjust this value to set the spacing between reelBg sprites

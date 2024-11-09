@@ -4,14 +4,14 @@ export const LoaderConfig = {
     spinBtn : "/src/sprites/ButtonSpin_1.png",
     spinBtnOnPressed :  "/src/sprites/ButtonSpinHover_1.png",
     maxBetBtn :  "/src/sprites/ButtonMaxBet_1.png",
-    maxBetBtOnPressed :  "/src/sprites/ButtonMaxBet_1.png",
+    maxBetBtOnPressed :  "/src/sprites/ButtonMaxBetHover.png",
     autoSpin :  "/src/sprites/ButtonAutoSpin_1.png",
     autoSpinOnPressed : "/src/sprites/ButtonAutoSpinHover_1.png",
     pBtn  :  "/src/sprites/ButtonPlus.png",
     pBtnH  :  "/src/sprites/ButtonPlusHover.png",
     mBtn  :  "/src/sprites/ButtonMinus.png",
     mBtnH  :  "/src/sprites/ButtonMinusHover.png",
-    lines :  "/src/sprites/buttonBg.png",
+    lines :  "/src/sprites/LineBetButton.png",
     GambleBg: "src/sprites/GambleBg.png",
     winPanel :  "/src/sprites/PanelWin.png",
     winPanel1:  "/src/sprites/PanelWin1.png",  
@@ -27,7 +27,26 @@ export const LoaderConfig = {
     infoBtn :  "/src/sprites/ButtonInfo.png",
     infoBtnH :  "/src/sprites/ButtonInfoHover.png",
     linesNumber: "src/sprites/buttonBg.png",
-   
+    lineBox: "src/sprites/LineBox.png",
+    paytableIcon :"src/sprites/PaytableIcon.png", 
+    balanceBox: "src/sprites/BalanceBox.png",
+    balanceText: "src/sprites/BalanceText.png",
+    settingText: "src/sprites/SettingsText.png",
+    rightPin: "src/sprites/rightPin.png",
+    leftPin: "src/sprites/leftPin.png",
+
+    number1: "src/sprites/number1.png",
+    number2: "src/sprites/number2.png",
+    number3: "src/sprites/number3.png",
+    number4: "src/sprites/number4.png",
+    number5: "src/sprites/number5.png",
+    number6: "src/sprites/number6.png",
+    number7: "src/sprites/number7.png",
+    number8: "src/sprites/number8.png",
+    number9: "src/sprites/number9.png",
+    number10: "src/sprites/number10.png",
+    number11: "src/sprites/number11.png",
+    number12: "src/sprites/number12.png",
 
     inofIcon1: "src/sprites/info1.png",
     inofIcon2: "src/sprites/info2.png",
@@ -37,6 +56,9 @@ export const LoaderConfig = {
     inofIcon6: "src/sprites/info6.png",
     inofIcon7: "src/sprites/info7.png",
     inofIcon8: "src/sprites/info8.png",
+    inofIcon9: "src/sprites/info9.png",
+    inofIcon10: "src/sprites/info10.png",
+    inofIcon11: "src/sprites/info11.png",
 
     exitButton: "src/sprites/ExitButton.png",
     exitButtonPressed: "src/sprites/ExitButton.png",
@@ -50,6 +72,8 @@ export const LoaderConfig = {
     disconnectClose: "src/sprites/closeButton.png",
     BonusScenegame: "src/sprites/BonusSceneImage.jpg",
     riskGameimage: "src/sprites/RiskGameImage.jpg",
+    dollar: 'src/sprites/dollarSign.png',
+    payLines: "src/sprites/payLines.png",
 
     reelBg: "src/sprites/reelBackground.png",
     leftColumn: "src/sprites/left.png",
@@ -416,6 +440,8 @@ export const LoaderConfig = {
     slots6_0 :  "/src/sprites/Symbols/icon7/icon_7.png",
     slots7_0 :  "/src/sprites/Symbols/icon8/icon_8.png",
     slots8_0 :  "/src/sprites/Symbols/icon9/Bonus.png",
+    slots9_0 :  "/src/sprites/Symbols/icon10/Wild.png",
+    slots10_0 :  "/src/sprites/Symbols/icon11/Jackpot.png",
 
     megawinAnimBg: "src/sprites/rays.png",
     megawinStar: "src/sprites/stars.png",
@@ -512,7 +538,7 @@ export const staticData = {
 };
 
 export const fontData = {
-    crashLandingItalic : "src/fonts/CrashLandingBB.ttf"
+    GhostKid : "src/fonts/GhostKidAOE_Pro.otf"
 }
 
 export const LoaderSoundConfig: any = {
