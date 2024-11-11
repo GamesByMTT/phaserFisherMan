@@ -12,7 +12,7 @@ export default class LineSymbols extends Phaser.GameObjects.Container{
         this.linesGenerator = linesGenerator;
 
         // Create number sprites
-        for (let i = 1; i < 13; i++) {
+        for (let i = 0; i < 12; i++) {
             let numberText = this.createNumber(scene, i);
             this.numberArr.push(numberText);
             this.add(numberText);
@@ -27,7 +27,7 @@ export default class LineSymbols extends Phaser.GameObjects.Container{
         const numberContainer = new Phaser.GameObjects.Container(scene);
         let leftSprite: Phaser.GameObjects.Sprite;
         let rightSprite: Phaser.GameObjects.Sprite;
-        let yPosition = (index / 2) * 97.5 - 220; // Adjusted Y position for both sides
+        let yPosition = (index / 2) * 97.5 - 170; // Adjusted Y position for both sides
 
         // For left side sprites
         leftSprite = scene.add.sprite(-gameConfig.scale.width / 3.18, yPosition + 100, `number${index}`).setScale(0.8).setOrigin(0.5);

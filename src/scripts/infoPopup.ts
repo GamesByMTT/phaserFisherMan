@@ -26,7 +26,15 @@ export default class InfoScene extends Scene{
         })
         this.pageviewContainer = this.add.container();
         this.popupBackground = new Phaser.GameObjects.Sprite(this, gameConfig.scale.width/2, gameConfig.scale.height/2, "messagePopup");
-        this.pageviewContainer.add(this.popupBackground)
+        const inputOverlay = this.add.rectangle(0, 0, this.cameras.main.width, this.cameras.main.height, 0x000000, 0.7)
+            .setOrigin(0, 0)
+            .setDepth(16)
+            .setInteractive();
+    
+        inputOverlay.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            pointer.event.stopPropagation();
+        });
+        this.pageviewContainer.add([inputOverlay, this.popupBackground])
         this.leftArrow = new Phaser.GameObjects.Sprite(this, 300, gameConfig.scale.height/2, "leftArrow").setInteractive().setScale(0.5);
         this.rightArrow = new Phaser.GameObjects.Sprite(this, 1600, gameConfig.scale.height/2, "rightArrow").setInteractive().setScale(0.5);
         this.infoCross = new Phaser.GameObjects.Sprite(this, gameConfig.scale.width * 0.77, gameConfig.scale.height/2-300, "infoCross").setInteractive().setScale(0.7)
@@ -49,12 +57,14 @@ export default class InfoScene extends Scene{
     createPages() {
         // Create pages and add content
         this.pages[1] = this.add.container(0, 0);
+        const payTableHeading = this.add.text(this.scale.width/2, 200, "Paytable", {fontFamily:"GhostKid", color: "#ffffff", fontSize: "70px"}).setOrigin(0.5)
         const payTableImage = this.add.sprite(gameConfig.scale.width/2, gameConfig.scale.height/2, "payLines").setScale(1.2)
        
-        this.pages[1].add([payTableImage]);
+        this.pages[1].add([payTableHeading, payTableImage]);
         this.pageviewContainer.add(this.pages[1]);
 
         this.pages[2] = this.add.container(0, 0);  // Position off-screen initially
+        const symbolPayoutone = this.add.text(this.scale.width/2, 200, "Symbol Payout", {fontFamily:"GhostKid", color: "#ffffff", fontSize: "70px"}).setOrigin(0.5)
 
         const symbol1 = this.add.sprite(500, 400, "inofIcon1").setScale(0.8)
         const symbol2 = this.add.sprite(900, 400, "inofIcon2").setScale(0.8)
@@ -62,7 +72,7 @@ export default class InfoScene extends Scene{
         const symbol4 = this.add.sprite(500, 600, "inofIcon4").setScale(0.8)
         const symbol5 = this.add.sprite(900, 600, "inofIcon5").setScale(0.8)
         const symbol6 = this.add.sprite(1250, 600, "inofIcon6").setScale(0.8)
-        const symbol7 = this.add.sprite(900, 800, "inofIcon7").setScale(0.8)
+        const symbol7 = this.add.sprite(900, 780, "inofIcon7").setScale(0.8)
         const infoIcons = [
             { x: 590, y: 400 }, // Position for infoIcon2
             { x: 990, y: 400 }, // Position for infoIcon3
@@ -112,11 +122,11 @@ export default class InfoScene extends Scene{
 
         // const BonusSceneDescription = this.add.text(this.scale.width/1.95, 430, "Triggers bonus game if 5 icons appear anywhere on the result matrix.", {fontFamily:"GhostKid", align:"center", color: "#ffffff", fontSize: "60px", wordWrap:{ width: 600, useAdvancedWrap: true }})
         
-        this.pages[2].add([symbol1, symbol2, symbol3, symbol4, symbol5, symbol6, symbol7])
+        this.pages[2].add([symbolPayoutone, symbol1, symbol2, symbol3, symbol4, symbol5, symbol6, symbol7])
         this.pageviewContainer.add(this.pages[2]);
 
         this.pages[3] = this.add.container(0, 0);  // Position off-screen initially
-
+        const symbolPayout = this.add.text(this.scale.width/2, 200, "Symbol Payout", {fontFamily:"GhostKid", color: "#ffffff", fontSize: "70px"}).setOrigin(0.5)
         const symbol8 = this.add.sprite(500, 400, "inofIcon8").setScale(0.8)
         const symbol8Text = this.add.text(600, 300, "Scatter: Offers higher pay outs when 3 or more symbols appear anywhere on the result matrix. Payout: 5x - 600, 4x - 300, 3x-100", {fontFamily:"GhostKid", fontSize:"25px", color: "#ffffff", wordWrap:{ width: 300, useAdvancedWrap: true }})
         const symbol9 = this.add.sprite(1050, 400, "inofIcon9").setScale(0.8)
@@ -130,16 +140,16 @@ export default class InfoScene extends Scene{
         // const riskGameImg = this.add.sprite(this.scale.width/2.9, 550, "riskGameimage").setScale(0.25)
 
         // const riskGameDescription = this.add.text(this.scale.width/1.95, 385, `The player can click the "Double" Button After a win to activate the risk game.  the player faces off against the dealer with the total four cards. the player selects one of three face-down cards first, then the dealer reveals their card, if the player chosen card is higher in value than the delear's card, the players winnings are doubled. If not then player receives nothing.`, {fontFamily:"GhostKid", align:"center", color: "#ffffff", fontSize: "40px", wordWrap:{ width: 550, useAdvancedWrap: true }})
-        this.pages[3].add([symbol8, symbol8Text, symbol9, symbol9Text, symbol10, symbol10Text, symbol11, symbol11Text])
+        this.pages[3].add([symbolPayout, symbol8, symbol8Text, symbol9, symbol9Text, symbol10, symbol10Text, symbol11, symbol11Text])
         this.pageviewContainer.add(this.pages[3]);
 
         this.pages[4] = this.add.container(0, 0);
 
-         const BonusSceneHeading = this.add.text(this.scale.width/2, 240, "BONUS GAME", {fontFamily:"GhostKid", color: "#ffffff", fontSize: "60px"}).setOrigin(0.5)
+        const BonusSceneHeading = this.add.text(this.scale.width/2, 200, "BONUS GAME", {fontFamily:"GhostKid", color: "#ffffff", fontSize: "70px"}).setOrigin(0.5)
 
-        const bonusGameImg = this.add.sprite(this.scale.width/2, this.scale.height/2, "BonusScenegame").setScale(0.35)
+        const bonusGameImg = this.add.sprite(this.scale.width/2, 480, "BonusScenegame").setScale(0.4)
 
-        const BonusSceneDescription = this.add.text(this.scale.width/1.95, 500, "Triggers bonus game if 5 icons appear anywhere on the result matrix.", {fontFamily:"GhostKid", align:"center", color: "#ffffff", fontSize: "60px", wordWrap:{ width: 600, useAdvancedWrap: true }})
+        const BonusSceneDescription = this.add.text(this.scale.width/2, 780, "In this game you will see five similar chest. Select them one by one to reveal your prize untill game is over", {fontFamily:"GhostKid", align:"center", color: "#ffffff", fontSize: "40px", wordWrap:{ width: 1000, useAdvancedWrap: true }}).setOrigin(0.5)
 
         this.pages[4].add([BonusSceneHeading, bonusGameImg, BonusSceneDescription])
         this.pages = [this.pages[1], this.pages[2], this.pages[3], this.pages[4]];

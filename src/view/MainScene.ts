@@ -52,11 +52,11 @@ export default class MainScene extends Scene {
         this.gameBg = this.add.sprite(width / 2, height / 2, 'gameBg')
             .setDepth(0)
             .setDisplaySize(1920, 1080);
-        this.reelBg = this.add.sprite(width/2, height/1.9, "reelBg").setOrigin(0.5).setDepth(3)
+        this.reelBg = this.add.sprite(width/2, height/2, "reelBg").setOrigin(0.5).setDepth(3)
         this.left = this.add.sprite(width * 0.22, height/1.9, "leftColumn").setOrigin(0.5).setDepth(3)
         this.right = this.add.sprite(width * 0.785, height/1.9, "rightColumn").setOrigin(0.5).setDepth(3)
-        this.top = this.add.sprite(width/2, height * 0.25, "topColumn").setOrigin(0.5).setDepth(3)
-        this.bottom = this.add.sprite(width/2, height * 0.81, "bottomColumn").setOrigin(0.5).setDepth(15).setDepth(3)
+        this.top = this.add.sprite(width/2, height * 0.23, "topColumn").setOrigin(0.5).setDepth(3)
+        this.bottom = this.add.sprite(width/2, height * 0.79, "bottomColumn").setOrigin(0.5).setDepth(15).setDepth(3)
         this.gameLogo = this.add.sprite(width * 0.5, height * 0.08, "gameLogo").setOrigin(0.5).setDepth(3)
         this.rightPin = this.add.sprite(gameConfig.scale.width * 0.8, gameConfig.scale.height/1.9, "rightPin").setOrigin(0.5)
         this.leftPin = this.add.sprite(gameConfig.scale.width * 0.2, gameConfig.scale.height/1.9, "leftPin").setOrigin(0.5) 
@@ -66,7 +66,7 @@ export default class MainScene extends Scene {
          const midLineSpacing = 212; // Adjust this value to set the spacing between reelBg sprites
          for (let i = 0; i < midLine; i++) {
              const midLineX = width / 3 + i * midLineSpacing; // or any specific x-coordinate
-             const midLineY = height / 1.9;
+             const midLineY = height / 2;
              const middleBar = new Phaser.GameObjects.Sprite(this, midLineX, midLineY, 'middleLine').setDepth(2);
              this.mainContainer.add(middleBar);
          }
@@ -78,13 +78,13 @@ export default class MainScene extends Scene {
         this.mainContainer.add(this.uiContainer);
 
         this.slot = new Slots(this, this.uiContainer, () => this.onResultCallBack(), this.soundManager);
-        this.lineGenerator = new LineGenerator(this, this.slot.slotSymbols[0][0].symbol.height + 50, this.slot.slotSymbols[0][0].symbol.width + 10);
+        this.lineGenerator = new LineGenerator(this, this.slot.slotSymbols[0][0].symbol.height, this.slot.slotSymbols[0][0].symbol.width + 10);
         this.mainContainer.add([this.lineGenerator, this.slot]);
 
         this.uiPopups = new UiPopups(this, this.uiContainer, this.soundManager);
         this.mainContainer.add(this.uiPopups);
 
-        this.lineSymbols = new LineSymbols(this, 10, 12, this.lineGenerator);
+        this.lineSymbols = new LineSymbols(this, 200, 12, this.lineGenerator);
         this.mainContainer.add(this.lineSymbols);
     }
 
@@ -135,13 +135,22 @@ export default class MainScene extends Scene {
         currentGameData.currentBalance = ResultData.playerData.Balance;
         let betValue = (initData.gameData.Bets[currentGameData.currentBetIndex]) * 20;
         let winAmount = ResultData.gameData.WinAmout;
+        let jackpot = ResultData.gameData.jackpot
         this.uiContainer.currentBalanceText.updateLabelText(currentGameData.currentBalance.toFixed(2));
-
-        if (winAmount >= 15 * betValue && winAmount < 20 * betValue) {
-            this.showWinPopup(winAmount, 'hugeWinPopup');
-        } else if (winAmount >= 20 * betValue && winAmount < 25 * betValue) {
-            this.showWinPopup(winAmount, 'megaWinPopup');
-        }
+        
+        if (winAmount >= 10 * betValue && winAmount < 15 * betValue) {
+            // Big Win Popup
+            this.showWinPopup(winAmount, 'bigWinText')
+           } else if (winAmount >= 15 * betValue && winAmount < 20 * betValue) {
+               // HugeWinPopup
+               this.showWinPopup(winAmount, 'hugeWinText')
+           } else if (winAmount >= 20 * betValue && winAmount < 25 * betValue) {
+               //MegawinPopup
+               this.showWinPopup(winAmount, 'megaWinText')
+           } else if(jackpot > 0) {
+              //jackpot Condition
+              this.showWinPopup(winAmount, 'jackpotText')
+           }
     }
 
     // Function to show win popup
@@ -155,70 +164,47 @@ export default class MainScene extends Scene {
             pointer.event.stopPropagation(); 
         });
 
-        const megaWinBg = this.add.sprite(gameConfig.scale.width / 2, gameConfig.scale.height / 2, "megawinAnimBg")
+        const left = this.add.sprite(gameConfig.scale.width * 0.2, gameConfig.scale.height * 0.2, "leftWinColumn")
             .setDepth(10)
             .setOrigin(0.5);
 
-        const megaWinStar = this.add.sprite(gameConfig.scale.width / 2, gameConfig.scale.height / 2, "megawinStar")
-            .setDepth(12)
-            .setOrigin(0.5)
-            .setScale(0); 
+        const rightWood = this.add.sprite(gameConfig.scale.width * 0.8, gameConfig.scale.height * 0.2, "rightWinColumn").setDepth(10).setOrigin(0.5);
+        const balanceBox = this.add.sprite(gameConfig.scale.width * 0.5, gameConfig.scale.height * 0.57, "winPanelBalance").setDepth(11).setOrigin(0.5)
 
-        this.tweens.add({
-            targets: megaWinStar,
-            scale: 1,
-            duration: 500,
-            yoyo: true,
-            repeat: -1,
-            ease: 'Sine.easeInOut',
-            delay: 250 
-        });
+        // // Create coin flip animation once
+        // this.createCoinFlipAnimation();
 
-        // Create coin flip animation once
-        this.createCoinFlipAnimation();
-
-        const winningSprite = this.add.sprite(gameConfig.scale.width / 4, gameConfig.scale.height * 0.8, `coin0`)
+        const leftCoin = this.add.sprite(gameConfig.scale.width * 0.1, gameConfig.scale.height * 0.35, `leftCoin`)
             .setDepth(13)
             .setScale(0.7)
-            .play('coinFlip');
-
-        const winSprite = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY - 50, spriteKey)
-            .setScale(0.8)
+        const rightCoin = this.add.sprite(gameConfig.scale.width * 0.9, gameConfig.scale.height * 0.35, "rightCoin").setDepth(13).setScale(0.7)
+        const winSprite = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY * 0.65, spriteKey)
+            .setScale(0.7)
             .setDepth(13);
+
+        const winText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + 70, '0', { fontFamily: "GhostKid", fontSize: '100px', color: '#FFFFFF'
+        }).setDepth(15).setOrigin(0.5);
 
         this.tweens.addCounter({
             from: 0,
             to: winAmount,
             duration: 1000,
             onUpdate: (tween) => {
-                // You might want to do something with the incrementing value here
-                // For example, update a text object
+                const value = Math.floor(tween.getValue());
+                winText.setText(value.toString());
             },
             onComplete: () => {
                 this.time.delayedCall(4000, () => {
                     inputOverlay.destroy();
-                    megaWinBg.destroy();
-                    megaWinStar.destroy();
+                    left.destroy();
+                    rightWood.destroy();
+                    balanceBox.destroy();
                     winSprite.destroy();
-                    winningSprite.stop();
-                    winningSprite.destroy();
+                    winText.destroy();
+                    leftCoin.destroy();
+                    rightCoin.destroy();
                 });
             }
-        });
-    }
-
-    // Separate function for coin flip animation
-    private createCoinFlipAnimation() {
-        const coinFrames = [];
-        for (let i = 0; i < 19; i++) {
-            coinFrames.push({ key: `coin${i}` });
-        }
-
-        this.anims.create({
-            key: `coinFlip`,
-            frames: coinFrames,
-            frameRate: 10,
-            repeat: -1
         });
     }
 }

@@ -81,7 +81,7 @@ export class UiContainer extends Phaser.GameObjects.Container {
                 const betAmount = initData.gameData.Bets[currentGameData.currentBetIndex];
                 const updatedBetAmount = betAmount * 12;
                 this.CurrentLineText.updateLabelText(betAmount);
-                this.CurrentBetText.updateLabelText(updatedBetAmount.toString());
+                this.CurrentBetText.updateLabelText(updatedBetAmount.toFixed(2).toString());
             }
             this.scene.time.delayedCall(200, () => {
                 this.mBtn.setTexture('mBtn');
@@ -100,9 +100,9 @@ export class UiContainer extends Phaser.GameObjects.Container {
      */
     winBtnInit() {
         const winPanel = this.scene.add.sprite(gameConfig.scale.width * 0.705, gameConfig.scale.height * 0.83, 'balancePanel').setScale(0.8)
-        const currentWining: any = ResultData.playerData.currentWining;
-        this.currentWiningText = new TextLabel(this.scene, winPanel.x, winPanel.y + 15, currentWining, 40, "#d2bd6a");
-        this.WiningText = this.scene.add.sprite(winPanel.x - 100, winPanel.y + 15, "winText").setOrigin(0.5)
+        const currentWining: any = ResultData.playerData.currentWining.toFixed(2);
+        this.currentWiningText = new TextLabel(this.scene, winPanel.x, winPanel.y, currentWining, 40, "#d2bd6a");
+        this.WiningText = this.scene.add.sprite(winPanel.x - 100, winPanel.y, "winText").setOrigin(0.5)
         // const winPanelChild = this.scene.add.container(winPanel.x, winPanel.y)
         this.add([ winPanel, this.currentWiningText, this.WiningText]);
     }
@@ -152,7 +152,7 @@ export class UiContainer extends Phaser.GameObjects.Container {
                 onComplete: () => {
                     // Send message and update the balance
                     Globals.Socket?.sendMessage("SPIN", { currentBet: currentGameData.currentBetIndex, currentLines: 9, spins: 1 });
-                    currentGameData.currentBalance -= initData.gameData.Bets[currentGameData.currentBetIndex];
+                    currentGameData.currentBalance -= (initData.gameData.Bets[currentGameData.currentBetIndex] * 12);
                     this.currentBalanceText.updateLabelText(currentGameData.currentBalance.toFixed(2));
                     // Trigger the spin callback
                     this.onSpin(true);

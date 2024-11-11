@@ -89,6 +89,8 @@ export const currentGameData = {
   currentLines: 0,
   currentBalance: 0,
   isMoving: false,
+  soundMode: true,
+  musicMode: true,
 };
 
 export const ResultData = {

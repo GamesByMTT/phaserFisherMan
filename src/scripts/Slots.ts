@@ -33,7 +33,7 @@ export class Slots extends Phaser.GameObjects.Container {
         this.slotMask = new Phaser.GameObjects.Graphics(scene);
         
         this.maskWidth = gameConfig.scale.width;
-        this.maskHeight = 580;
+        this.maskHeight = 560;
         // this.slotMask.fillStyle(0xffffff, 1);
         this.slotMask.fillRoundedRect(0, 0, this.maskWidth, this.maskHeight, 20);
         // mask Position set
@@ -57,7 +57,7 @@ export class Slots extends Phaser.GameObjects.Container {
             x: gameConfig.scale.width /3.52,
             y: gameConfig.scale.height / 3.1   
         };
-        const totalSymbol = 7;
+        const totalSymbol = 4;
         const visibleSymbol = 3;
         const startIndex = 1;
         const initialYOffset = (totalSymbol - startIndex - visibleSymbol) * this.spacingY;
@@ -76,7 +76,7 @@ export class Slots extends Phaser.GameObjects.Container {
                     startPos.x + i * (this.spacingX + 11),
                     startPos.y + j * (11 + this.spacingY)
                 );
-                slot.symbol.setScale(0.8)
+                slot.symbol.setScale(0.75)
                 slot.startX = slot.symbol.x;
                 slot.startY = slot.symbol.y;
                 this.slotSymbols[i].push(slot);
@@ -105,28 +105,39 @@ export class Slots extends Phaser.GameObjects.Container {
     }
 
     moveReel() {    
-
-        for (let i = 0; i < this.slotSymbols.length; i++) {
+        this.stopWinningAnimations();
+        for (let i = 0; i < this.reelContainers.length; i++) {
+            const reelContainer = this.reelContainers[i];
             for (let j = 0; j < this.slotSymbols[i].length; j++) {
                 const symbol = this.slotSymbols[i][j];
+                
+                // Stop the symbol animation
+                if (symbol.symbol.anims.isPlaying) {
+                    symbol.symbol.anims.stop();
+                    symbol.symbol.setTexture(this.updateKeyToZero(symbol.symbol.texture.key));
+                }
+    
+                // Destroy winning sprite if it exists
                 if (symbol.winningSprite) {
                     symbol.winningSprite.anims.stop();
                     symbol.winningSprite.destroy();
-                    symbol.winningSprite = null; // Clear the reference
+                    symbol.winningSprite = null;
                 }
             }
         }
-
-         ResultData.gameData.symbolsToEmit.forEach((rowArray: any) => {
-            rowArray.forEach((row: any) => {
-                if (typeof row === "string") {
-                    const [y, x] = row.split(",").map((value) => parseInt(value));
-                    if (this.slotSymbols[y] && this.slotSymbols[y][x]) {
-                        this.slotSymbols[y][x].stopAnimation(); 
+        // // Clear any remaining winning animations from symbolsToEmit
+        if (ResultData.gameData.symbolsToEmit) {
+            ResultData.gameData.symbolsToEmit.forEach((rowArray: any) => {
+                rowArray.forEach((row: any) => {
+                    if (typeof row === "string") {
+                        const [y, x] = row.split(",").map((value) => parseInt(value));
+                        if (this.slotSymbols[y] && this.slotSymbols[y][x]) {
+                            this.slotSymbols[y][x].stopAnimation();
+                        }
                     }
-                }
+                });
             });
-        });
+        }
 
         const initialYOffset = (this.slotSymbols[0][0].totalSymbol - this.slotSymbols[0][0].visibleSymbol - this.slotSymbols[0][0].startIndex) * (this.slotSymbols[0][0].spacingY + 11);
         setTimeout(() => {
@@ -220,7 +231,7 @@ export class Slots extends Phaser.GameObjects.Container {
 
     playWinAnimations() {
         this.resultCallBack();
-
+        // this.stopWinningAnimations();
         ResultData.gameData.symbolsToEmit.forEach((rowArray: any) => {
             rowArray.forEach((row: any) => {
                 if (typeof row === "string") {
@@ -265,29 +276,35 @@ export class Slots extends Phaser.GameObjects.Container {
                 .setDepth(12)
                 .setScale(0.8, 0.8)
                 .setName(`winningSprite_${x}_${y}`);
-
             targetContainer.add(winningSprite); // Add to the container
-
             this.slotSymbols[y][x].winningSprite = winningSprite; 
-
             winningSprite.play(`winningAnim_${elementId}`);
     }
 
     stopWinningAnimations() {
-        for (let i = 0; i < this.slotSymbols.length; i++) {
+        for (let i = 0; i < this.reelContainers.length; i++) { // Iterate through reel containers
             for (let j = 0; j < this.slotSymbols[i].length; j++) {
-                const symbol = this.slotSymbols[i][j];
-                const winningSprite = symbol.symbol.parentContainer.getByName(`winningSprite_${i}_${j}`) as Phaser.GameObjects.Sprite;
+                const winningSpriteName = `winningSprite_${j}_${i}`; // Correct naming
+                const winningSprite = this.reelContainers[i].getByName(winningSpriteName) as Phaser.GameObjects.Sprite; // Get from the correct container
                 if (winningSprite) {
                     winningSprite.anims.stop();
                     winningSprite.destroy();
+                    this.slotSymbols[i][j].winningSprite = null; // Clear the reference
                 }
             }
         }
     }
- 
     winMusic(key: string){
         this.SoundManager.playSound(key)
+    }
+
+    private updateKeyToZero(symbolKey: string): string {
+        const match = symbolKey.match(/^slots(\d+)_\d+$/);
+        if (match) {
+            const xValue = match[1];
+            return `slots${xValue}_0`;
+        }
+        return symbolKey;
     }
     
 }
@@ -345,8 +362,8 @@ class Symbols {
        this.symbol.play(animationId)
     }
     stopAnimation() {
-        // console.log(this.symbol.anims.isPlaying);
         if (this.symbol.anims.isPlaying) {
+            console.log("check playing in Symbol Class or not");
             this.symbol.anims.stop();
         } 
     }

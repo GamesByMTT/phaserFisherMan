@@ -12,10 +12,11 @@ export default class BonusScene extends Scene {
     private spriteNames: string[][] = []; 
     private clickAnimations: string[][] = []; // Array for click animations
     private gemObjects: Phaser.GameObjects.Sprite[] = [];
-    private bonusResults: string[] = ['20', '40', '30', '50', '0']; 
+    private bonusResults: string[] = []; 
     private totalWinAmount: number = 0;
     private winamountText!: Phaser.GameObjects.Text;
     panelBg!: Phaser.GameObjects.Sprite
+    private totalPossibleBonus: number = 0;
     private isSpriteClicked: boolean = false;
 
     constructor() {
@@ -23,62 +24,80 @@ export default class BonusScene extends Scene {
         this.SoundManager = new SoundManager(this); 
     }
 
+    private calculateTotalBonus(): number {
+        return ResultData.gameData.BonusResult
+            .map(value => parseInt(value))
+            .reduce((sum, current) => sum + current, 0);
+    }
+
     create() {
         const { width, height } = this.cameras.main;
         this.bonusContainer = this.add.container();
         this.SoundManager.playSound("bonusBg");
 
-        this.SceneBg = new Phaser.GameObjects.Sprite(this, width / 2, height / 2, 'GambleBg')
+        this.SceneBg = new Phaser.GameObjects.Sprite(this, width / 2, height / 2, 'gameBg')
             .setDisplaySize(width, height)
             .setDepth(11)
             .setInteractive();
         this.SceneBg.on('pointerdown', (pointer:Phaser.Input.Pointer)=>{
             pointer.event.stopPropagation();
         })
-
-        this.winBg = new Phaser.GameObjects.Sprite(this, width * 0.5, height * 0.2, "bonusLogo").setScale(0.8);
-        this.winamountText = this.add.text(width * 0.51, height * 0.15, this.totalWinAmount.toString(), { font: "40px Arial", color: "#fff",  align: 'center',  }).setOrigin(0.5);
-        this.panelBg = new Phaser.GameObjects.Sprite(this, width * 0.5, height * 0.9, "balancePanel").setDisplaySize(500, 72)
-        const tipsText = new Phaser.GameObjects.Text(this, width * 0.5, height * 0.9, "Tap On The Crystals To Try Your Luck", {color:"#ffffff", fontSize:"23px", align:"center", fontFamily:"Arial"}).setOrigin(0.5)
-        this.bonusContainer.add([this.SceneBg, this.winBg, this.winamountText, this.panelBg, tipsText]);
-
-        // Define animation frames 
+        this.bonusResults = ResultData.gameData.BonusResult
+        this.totalPossibleBonus = this.calculateTotalBonus();
+        console.log("Total Possible Bonus:", this.totalPossibleBonus);
+       
+        this.bonusContainer.add([this.SceneBg]);
+        this.createBoxAnimations();
+        // Define sprite names for idle and click animations
         this.spriteNames = [
-            ['blue0', 'blue1', 'blue2', 'blue3', 'blue4', 'blue5', 'blue6', 'blue7', 'blue8', 'blue9', 'blue10', 'blue11', 'blue12', 'blue13', 'blue14', 'blue15', 'blue16', 'blue17', 'blue18', 'blue19', 'blue20'], 
-            ['green0', 'green1', 'green2', 'green3', 'green4', 'green5', 'green6', 'green7', 'green8', 'green9', 'green10', 'green11', 'green12', 'green13', 'green14', 'green15', 'green16', 'green17', 'green18', 'green19', 'green20'],
-            ['purple0', 'purple1', 'purple2', 'purple3', 'purple4', 'purple5', 'purple6', 'purple7', 'purple8', 'purple9', 'purple10', 'purple11', 'purple12', 'purple13', 'purple14', 'purple15', 'purple16', 'purple17', 'purple18', 'purple19', 'purple20'],
-            ['red0', 'red1', 'red2', 'red3', 'red4', 'red5', 'red6', 'red7', 'red8', 'red9', 'red10', 'red11', 'red12', 'red13', 'red14', 'red15', 'red16', 'red17', 'red18', 'red19', 'red20'],
-            ['yellow0', 'yellow1', 'yellow2', 'yellow3', 'yellow4', 'yellow5', 'yellow6', 'yellow7', 'yellow8', 'yellow9', 'yellow10', 'yellow11', 'yellow12', 'yellow13', 'yellow14', 'yellow15', 'yellow16', 'yellow17', 'yellow18', 'yellow19', 'yellow20']
+            ['box0']
         ];
-
-        // Define click animation frames
         this.clickAnimations = [
-            ['blueAnim51', 'blueAnim52', 'blueAnim53', 'blueAnim54', 'blueAnim55', 'blueAnim56', 'blueAnim57', 'blueAnim58', 'blueAnim59', 'blueAnim60', 'blueAnim61', 'blueAnim62', 'blueAnim63', 'blueAnim64', 'blueAnim65', 'blueAnim66', 'blueAnim67'],
-            ['greenAnim51', 'greenAnim52', 'greenAnim53', 'greenAnim54', 'greenAnim55', 'greenAnim56', 'greenAnim57', 'greenAnim58', 'greenAnim59', 'greenAnim60', 'greenAnim61', 'greenAnim62', 'greenAnim63', 'greenAnim64', 'greenAnim65', 'greenAnim66', 'greenAnim67'],
-            ['purpleAnim51', 'purpleAnim52', 'purpleAnim53', 'purpleAnim54', 'purpleAnim55', 'purpleAnim56', 'purpleAnim57', 'purpleAnim58', 'purpleAnim59', 'purpleAnim60', 'purpleAnim61', 'purpleAnim62', 'purpleAnim63', 'purpleAnim64', 'purpleAnim65', 'purpleAnim66', 'purpleAnim67'],
-            ['redAnim51', 'redAnim52', 'redAnim53', 'redAnim54', 'redAnim55', 'redAnim56', 'redAnim57', 'redAnim58', 'redAnim59', 'redAnim60', 'redAnim61', 'redAnim62', 'redAnim63', 'redAnim64', 'redAnim65', 'redAnim66', 'redAnim67'],
-            ['yellowAnim51', 'yellowAnim52', 'yellowAnim53', 'yellowAnim54', 'yellowAnim55', 'yellowAnim56', 'yellowAnim57', 'yellowAnim58', 'yellowAnim59', 'yellowAnim60', 'yellowAnim61', 'yellowAnim62', 'yellowAnim63', 'yellowAnim64', 'yellowAnim65', 'yellowAnim66', 'yellowAnim67']
+            ['box0', 'box1', 'box2', 'box3', 'box4', 'box5'], // Click animation sequence
         ];
 
-        // Define x positions for sprites
-        const xPositions: number[] = [500, 750, 1000, 1250, 1500]; 
+        const positions = [
+            // First row (2 boxes)
+            { x: gameConfig.scale.width * 0.35, y: gameConfig.scale.height * 0.3 },
+            { x: gameConfig.scale.width * 0.65, y: gameConfig.scale.height * 0.3 },
+            // Second row (3 boxes)
+            { x: gameConfig.scale.width * 0.25, y: gameConfig.scale.height * 0.6 },
+            { x: gameConfig.scale.width * 0.5, y: gameConfig.scale.height * 0.6 },
+            { x: gameConfig.scale.width * 0.75, y: gameConfig.scale.height * 0.6 }
+        ];
 
-        // Create sprites 
-        xPositions.forEach((xPos: number, index: number) => {
-            const symbolIndex = index % this.spriteNames.length; 
-            const sprite = this.add.sprite(xPos, gameConfig.scale.width/2.4, this.spriteNames[symbolIndex][0]) 
+        positions.forEach((pos, index) => {
+            const sprite = this.add.sprite(pos.x, pos.y, this.spriteNames[0][0])
                 .setInteractive()
                 .setDepth(11);
 
-            sprite.setData('value', ResultData.gameData.BonusResult[index]);
-            // sprite.setData('value', this.bonusResults[index]);
-            sprite.setData('symbolIndex', symbolIndex); 
-            sprite.on('pointerdown', () => this.handleGemClick(sprite, xPos, gameConfig.scale.width/2.4)); 
+            sprite.setData('value', this.bonusResults[index]);
+            sprite.setData('symbolIndex', 0);
+            sprite.setData('originalPosition', { x: pos.x, y: pos.y });
+            sprite.on('pointerdown', () => this.handleGemClick(sprite));
+
             this.gemObjects.push(sprite);
             this.spriteObjects.push(sprite);
         });
 
-        this.createTweenAnimations(); 
+        this.createTweenAnimations();
+    }
+
+    private createBoxAnimations(): void {
+        // Create animation sequence
+        this.anims.create({
+            key: 'boxReveal',
+            frames: [
+                { key: 'box0' },
+                { key: 'box1' },
+                { key: 'box2' },
+                { key: 'box3' },
+                { key: 'box4' },
+                { key: 'box5' }
+            ],
+            frameRate: 2,
+            repeat: 0
+        });
     }
 
     private createTweenAnimations(): void {
@@ -87,7 +106,7 @@ export default class BonusScene extends Scene {
             this.tweens.addCounter({
                 from: 0,
                 to: symbolFrames.length - 1,
-                duration: 1500, 
+                duration: 500, 
                 repeat: -1, 
                 onUpdate: (tween: Phaser.Tweens.Tween) => {
                     if (!this.isSpriteClicked) { // Only update if not clicked
@@ -99,60 +118,183 @@ export default class BonusScene extends Scene {
         });
     }
 
-    private handleGemClick(sprite: Phaser.GameObjects.Sprite, x: number, y: number): void {
-        
+    private handleGemClick(sprite: Phaser.GameObjects.Sprite): void {
+        if (this.isSpriteClicked) return; // Prevent multiple clicks
+        this.isSpriteClicked = true;
+        const originalPos = sprite.getData('originalPosition');
         const valueText = sprite.getData('value');
         const value = parseInt(valueText);
-        this.totalWinAmount += value;
-        this.winamountText.setText(this.totalWinAmount.toString());
+        // First play shake animation
+        this.shakeBox(sprite, () => {
+            // After shake, play the reveal animation
+            this.playRevealAnimation(sprite, value, originalPos);
+        });
+    }
 
-        this.tweens.getTweensOf(sprite).forEach(tween => tween.stop()); 
+    private shakeBox(sprite: Phaser.GameObjects.Sprite, onComplete: () => void): void {
+        const originalPos = sprite.getData('originalPosition');
+        const shakeDistance = 5;
+        const shakeDuration = 50;
+        const shakeIterations = 4;
+
+        let currentIteration = 0;
+        const shakeSequence = () => {
+            if (currentIteration >= shakeIterations) {
+                // Return to original position and complete
+                this.tweens.add({
+                    targets: sprite,
+                    x: originalPos.x,
+                    y: originalPos.y,
+                    duration: shakeDuration,
+                    onComplete: onComplete
+                });
+                return;
+            }
+
+            // Shake right
+            this.tweens.add({
+                targets: sprite,
+                x: originalPos.x + shakeDistance,
+                duration: shakeDuration,
+                onComplete: () => {
+                    // Shake left
+                    this.tweens.add({
+                        targets: sprite,
+                        x: originalPos.x - shakeDistance,
+                        duration: shakeDuration,
+                        onComplete: () => {
+                            currentIteration++;
+                            shakeSequence();
+                        }
+                    });
+                }
+            });
+        };
+
+        shakeSequence();
+    }
+
+    private playRevealAnimation(sprite: Phaser.GameObjects.Sprite, value: number, originalPos: { x: number, y: number }): void {
+        sprite.setVisible(false);
+        
         const symbolIndex = sprite.getData('symbolIndex');
-        const clickAnimationFrames = this.clickAnimations[symbolIndex]; 
-
-        this.isSpriteClicked = true; // Set the flag
-
-        sprite.setVisible(false);  
-
-        const animSprite = this.add.sprite(x, y, clickAnimationFrames[0]).setDepth(12); 
-        let finalFramePosition = { x, y };
+        const clickAnimationFrames = this.clickAnimations[symbolIndex];
+        const animSprite = this.add.sprite(originalPos.x, originalPos.y, clickAnimationFrames[0]).setDepth(12);
     
         this.tweens.addCounter({
             from: 0,
             to: clickAnimationFrames.length - 1,
-            duration: 1500, 
+            duration: 500,
             onUpdate: (tween: Phaser.Tweens.Tween) => {
                 const frameIndex = Math.floor(tween.getValue());
                 animSprite.setTexture(clickAnimationFrames[frameIndex]);
-                finalFramePosition = { x: animSprite.x, y: animSprite.y };
             },
             onComplete: () => {
-                let text = this.add.text(finalFramePosition.x, finalFramePosition.y + 380, `+${valueText}`, { font: "50px Arial", color: "#fff" }).setOrigin(0.5);
-                if (value === 0) {
-                    text.destroy();
-                    text = this.add.text(finalFramePosition.x, finalFramePosition.y + 360, "GameOver", { font: "40px Arial", color: "#fff" }).setOrigin(0.5);
-                    setTimeout(() => {
-                        this.SoundManager.pauseSound("bonusBg");
-                        Globals.SceneHandler?.removeScene("BonusScene"); 
-                    }, 2000);
-                } else {
-                    this.SoundManager.playSound("bonuswin");
-                }
-
+                // Create text at box position
+                let text = this.add.text(
+                    originalPos.x, 
+                    originalPos.y, // Start at box position
+                    value === 0 ? "Game Over" : `+${value}`, 
+                    { 
+                        fontFamily: "GhostKid",
+                        font: "60px", 
+                        color: "#0000FF",
+                        stroke: '#0000FF',
+                        strokeThickness: 4,
+                    }
+                ).setOrigin(0.5).setDepth(13);
+    
+                // Animate text moving upward
                 this.tweens.add({
                     targets: text,
-                    alpha: 0, 
+                    y: originalPos.y - 200, // Move up by 100 pixels (adjust as needed)
                     duration: 1000,
-                    delay: 1000, 
+                    ease: 'Power1',
                     onComplete: () => {
-                        text.destroy(); 
+                        if (value === 0) {
+                            const overlay = this.add.rectangle(
+                                0, 0,
+                                gameConfig.scale.width,
+                                gameConfig.scale.height,
+                                0x000000, 0.7
+                            ).setOrigin(0).setDepth(14);
+    
+                            // Create "Your Win" text
+                            const yourWinText = this.add.sprite(
+                                gameConfig.scale.width / 2,
+                                gameConfig.scale.height + 100, // Start below screen
+                                "yourWin"
+                            ).setOrigin(0.5).setDepth(15).setScale(0.6);
+    
+                            // Create win amount text
+                            const winAmountText = this.add.text(
+                                gameConfig.scale.width / 2,
+                                gameConfig.scale.height + 800, // Start below screen
+                                `${this.totalWinAmount}`,
+                                {
+                                    fontFamily: "GhostKid",
+                                    fontSize: "90px",
+                                    color: "#ecae39", // Gold color
+                                    stroke: '#000000',
+                                    strokeThickness: 6
+                                }
+                            ).setOrigin(0.5).setDepth(15);
+    
+                            // Animate overlay alpha
+                            this.tweens.add({
+                                targets: overlay,
+                                alpha: { from: 0, to: 0.7 },
+                                duration: 500
+                            });
+    
+                            // Animate "Your Win" text
+                            this.tweens.add({
+                                targets: yourWinText,
+                                y: gameConfig.scale.height / 2 - 150, // Move to center
+                                duration: 1000,
+                                ease: 'Back.easeOut',
+                                delay: 500
+                            });
+    
+                            // Animate win amount
+                            this.tweens.add({
+                                targets: winAmountText,
+                                y: gameConfig.scale.height / 2 + 150, // Move to center
+                                duration: 1000,
+                                ease: 'Back.easeOut',
+                                delay: 700,
+                                onComplete: () => {
+                                    // Add a close button or timeout to remove the scene
+                                    setTimeout(() => {
+                                        this.SoundManager.pauseSound("bonusBg");
+                                        Globals.SceneHandler?.removeScene("BonusScene");
+                                    }, 3000);
+                                }
+                            });
+                        } else {
+                            this.SoundManager.playSound("bonuswin");
+                            this.totalWinAmount += value;
+                            if (this.winamountText) {
+                                this.winamountText.setText(this.totalWinAmount.toString());
+                            }
+                        }
+    
+                        // Fade out text after it has moved up
+                        this.tweens.add({
+                            targets: text,
+                            alpha: 0,
+                            duration: 500,
+                            delay: 500,
+                            onComplete: () => {
+                                text.destroy();
+                                // animSprite.destroy();
+                                this.isSpriteClicked = false;
+                            }
+                        });
                     }
                 });
-                // this.isSpriteClicked = false;
-                sprite.destroy();
-                animSprite.destroy();
             }
-        });
+        })
     }
 
     spinWheel() {
