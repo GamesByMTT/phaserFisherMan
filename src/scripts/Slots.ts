@@ -240,7 +240,6 @@ export class Slots extends Phaser.GameObjects.Container {
 
                     if (this.slotSymbols[y] && this.slotSymbols[y][x]) {
                         this.winMusic("winMusic");
-
                         // Play the regular symbol animation
                         this.slotSymbols[y][x].playAnimation(`symbol_anim_${elementId}`);
 
@@ -250,13 +249,13 @@ export class Slots extends Phaser.GameObjects.Container {
                 }
             });
         });
+        
     }
 
     playWinningOverlayAnimation(x: number, y: number, elementId: number) {
         // Calculate the position for the winning animation
         const winAnimX = this.slotSymbols[y][x].symbol.x;
         const winAnimY = this.slotSymbols[y][x].symbol.y;
-
         // Create an array to hold the winning animation frames
         const winningFrames = [];
         for (let i = 0; i < 50; i++) { // Assuming you have 50 frames (winning0 to winning49)
@@ -282,6 +281,7 @@ export class Slots extends Phaser.GameObjects.Container {
     }
 
     stopWinningAnimations() {
+        this.stopWinMusic('winMusic'); // Stop the win music
         for (let i = 0; i < this.reelContainers.length; i++) { // Iterate through reel containers
             for (let j = 0; j < this.slotSymbols[i].length; j++) {
                 const winningSpriteName = `winningSprite_${j}_${i}`; // Correct naming
@@ -294,8 +294,15 @@ export class Slots extends Phaser.GameObjects.Container {
             }
         }
     }
-    winMusic(key: string){
-        this.SoundManager.playSound(key)
+    winMusic(key: string) {
+        if (!this.SoundManager.isSoundPlaying(key)) {
+            this.SoundManager.playSound(key);
+        }
+    }
+    stopWinMusic(key: string) {
+        if (this.SoundManager.isSoundPlaying(key)) {
+            this.SoundManager.stopSound(key);
+        }
     }
 
     private updateKeyToZero(symbolKey: string): string {

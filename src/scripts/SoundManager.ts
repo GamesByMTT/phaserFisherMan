@@ -10,9 +10,9 @@ export default class SoundManager {
     private musicEnabled: boolean = true;
     private masterVolume: number = 1; // New property for master volume
 
+
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
-        this.setupFocusBlurEvents();
     }
 
     public addSound(key: string, url: string) {
@@ -21,6 +21,10 @@ export default class SoundManager {
         } else {
             this.sounds[key] = this.scene.sound.add(key, { volume: 0.5 });
         }
+    }
+
+    public isSoundPlaying(key: string): boolean {
+        return Globals.soundResources[key] ? Globals.soundResources[key].playing() : false;
     }
 
     public playSound(key: string) {
@@ -55,11 +59,12 @@ public setSoundEnabled(enabled: boolean) {
         // Stop all sounds when sounds is disabled
         Object.values(this.sounds).forEach(sounds => sounds.stop());
     }
+    this.setMusicEnabled(this.musicEnabled);
 }
 
 public setMusicEnabled(enabled: boolean) {
     this.musicEnabled = enabled;
-        // Additional logic for handling music
+    console.log("this.musicEnabled", this.musicEnabled);
     if (!enabled) {
         this.stopSound("backgroundMusic")
     }else{
@@ -92,16 +97,7 @@ private applyVolumeToSound(sound: Howl & { userVolume?: number }) {
 public getSound(key: string): Phaser.Sound.BaseSound | undefined {
     return this.sounds[key];
 }
-private setupFocusBlurEvents() {
-    window.addEventListener('blur', () => {
-            // console.log("onBlur");
-                this.pauseSound('backgroundMusic');
-        });
 
-        window.addEventListener('focus', () => {
-            this.resumeBgMusic('backgroundMusic');
-        });
-    }
 
     public getMasterVolume(): number {
         return this.masterVolume;

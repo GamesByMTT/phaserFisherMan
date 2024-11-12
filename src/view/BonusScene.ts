@@ -24,12 +24,6 @@ export default class BonusScene extends Scene {
         this.SoundManager = new SoundManager(this); 
     }
 
-    private calculateTotalBonus(): number {
-        return ResultData.gameData.BonusResult
-            .map(value => parseInt(value))
-            .reduce((sum, current) => sum + current, 0);
-    }
-
     create() {
         const { width, height } = this.cameras.main;
         this.bonusContainer = this.add.container();
@@ -43,9 +37,6 @@ export default class BonusScene extends Scene {
             pointer.event.stopPropagation();
         })
         this.bonusResults = ResultData.gameData.BonusResult
-        this.totalPossibleBonus = this.calculateTotalBonus();
-        console.log("Total Possible Bonus:", this.totalPossibleBonus);
-       
         this.bonusContainer.add([this.SceneBg]);
         this.createBoxAnimations();
         // Define sprite names for idle and click animations
@@ -74,7 +65,10 @@ export default class BonusScene extends Scene {
             sprite.setData('value', this.bonusResults[index]);
             sprite.setData('symbolIndex', 0);
             sprite.setData('originalPosition', { x: pos.x, y: pos.y });
-            sprite.on('pointerdown', () => this.handleGemClick(sprite));
+            sprite.on('pointerdown', () => {
+                this.SoundManager.playSound("buttonpressed");
+                this.handleGemClick(sprite)
+            });
 
             this.gemObjects.push(sprite);
             this.spriteObjects.push(sprite);
@@ -126,8 +120,8 @@ export default class BonusScene extends Scene {
         const value = parseInt(valueText);
         // First play shake animation
         this.shakeBox(sprite, () => {
-            // After shake, play the reveal animation
             this.playRevealAnimation(sprite, value, originalPos);
+            this.SoundManager.playSound("bonusboxOpen")
         });
     }
 
@@ -176,7 +170,7 @@ export default class BonusScene extends Scene {
 
     private playRevealAnimation(sprite: Phaser.GameObjects.Sprite, value: number, originalPos: { x: number, y: number }): void {
         sprite.setVisible(false);
-        
+        this.totalPossibleBonus +=value
         const symbolIndex = sprite.getData('symbolIndex');
         const clickAnimationFrames = this.clickAnimations[symbolIndex];
         const animSprite = this.add.sprite(originalPos.x, originalPos.y, clickAnimationFrames[0]).setDepth(12);
@@ -267,6 +261,7 @@ export default class BonusScene extends Scene {
                                     // Add a close button or timeout to remove the scene
                                     setTimeout(() => {
                                         this.SoundManager.pauseSound("bonusBg");
+                                        this.SoundManager.playSound("backgroundMusic");
                                         Globals.SceneHandler?.removeScene("BonusScene");
                                     }, 3000);
                                 }

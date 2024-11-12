@@ -144,7 +144,6 @@ export default class MainLoader extends Scene {
     private loadMainScene() {
         this.cleanupUI();
         this.setupGlobals();
-        Globals.SceneHandler?.addScene('MainScene', MainScene, true);
     }
 
     private cleanupUI() {
@@ -165,6 +164,7 @@ export default class MainLoader extends Scene {
                 console.warn(`Invalid sound configuration for key: ${key}`);
             }
         });
+        Globals.SceneHandler?.addScene('MainScene', MainScene, true);
     }
 
     private drawRoundedRect(graphics: Phaser.GameObjects.Graphics, x: number, y: number, width: number, height: number, radius: number) {

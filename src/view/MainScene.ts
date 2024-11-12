@@ -9,7 +9,6 @@ import {
     ResultData, 
     currentGameData, 
     initData, 
-    gambleResult 
 } from '../scripts/Globals';
 import { gameConfig } from '../scripts/appconfig';
 import BonusScene from './BonusScene';
@@ -52,7 +51,7 @@ export default class MainScene extends Scene {
         this.gameBg = this.add.sprite(width / 2, height / 2, 'gameBg')
             .setDepth(0)
             .setDisplaySize(1920, 1080);
-        this.reelBg = this.add.sprite(width/2, height/2, "reelBg").setOrigin(0.5).setDepth(3)
+        this.reelBg = this.add.sprite(width/2, height/1.98, "reelBg").setOrigin(0.5).setDepth(3)
         this.left = this.add.sprite(width * 0.22, height/1.9, "leftColumn").setOrigin(0.5).setDepth(3)
         this.right = this.add.sprite(width * 0.785, height/1.9, "rightColumn").setOrigin(0.5).setDepth(3)
         this.top = this.add.sprite(width/2, height * 0.23, "topColumn").setOrigin(0.5).setDepth(3)
@@ -86,6 +85,7 @@ export default class MainScene extends Scene {
 
         this.lineSymbols = new LineSymbols(this, 200, 12, this.lineGenerator);
         this.mainContainer.add(this.lineSymbols);
+        this.setupFocusBlurEvents()
     }
 
     update(time: number, delta: number) {
@@ -115,9 +115,7 @@ export default class MainScene extends Scene {
             setTimeout(() => {
                 this.slot.stopTween();
             }, 1000);
-        } else if (msgType === 'GambleResult') {
-            this.uiContainer.currentWiningText.updateLabelText(gambleResult.gamleResultData.currentWining.toString());
-        }
+        } 
     }
 
     // Handle ResultData logic separately
@@ -128,10 +126,11 @@ export default class MainScene extends Scene {
                 this.uiContainer.autoBetBtn.emit('pointerdown');
                 this.uiContainer.autoBetBtn.emit('pointerup'); 
             }
+            this.soundManager.pauseSound("backgroundMusic");
             Globals.SceneHandler?.addScene('BonusScene', BonusScene, true);
         }
 
-        this.uiContainer.currentWiningText.updateLabelText(ResultData.playerData.currentWining.toString());
+        this.uiContainer.currentWiningText.updateLabelText(ResultData.playerData.currentWining.toFixed(2).toString());
         currentGameData.currentBalance = ResultData.playerData.Balance;
         let betValue = (initData.gameData.Bets[currentGameData.currentBetIndex]) * 20;
         let winAmount = ResultData.gameData.WinAmout;
@@ -170,10 +169,6 @@ export default class MainScene extends Scene {
 
         const rightWood = this.add.sprite(gameConfig.scale.width * 0.8, gameConfig.scale.height * 0.2, "rightWinColumn").setDepth(10).setOrigin(0.5);
         const balanceBox = this.add.sprite(gameConfig.scale.width * 0.5, gameConfig.scale.height * 0.57, "winPanelBalance").setDepth(11).setOrigin(0.5)
-
-        // // Create coin flip animation once
-        // this.createCoinFlipAnimation();
-
         const leftCoin = this.add.sprite(gameConfig.scale.width * 0.1, gameConfig.scale.height * 0.35, `leftCoin`)
             .setDepth(13)
             .setScale(0.7)
@@ -204,6 +199,18 @@ export default class MainScene extends Scene {
                     leftCoin.destroy();
                     rightCoin.destroy();
                 });
+            }
+        });
+    }
+
+    private setupFocusBlurEvents() {
+        window.addEventListener('blur', () => {
+                this.soundManager.stopSound('backgroundMusic');
+        });
+
+        window.addEventListener('focus', () => {
+            if(currentGameData.musicMode){
+                this.soundManager.playSound('backgroundMusic');
             }
         });
     }
